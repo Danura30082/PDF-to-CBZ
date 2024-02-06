@@ -2,8 +2,15 @@ import fitz
 import os
 import shutil
 import glob
+import rarfile
+import zipfile
+
 dir_to_convert = r'C:\Users\arnau\OneDrive\Images\BD'
 done_dir = r'C:\Users\arnau\OneDrive\Images\00Done'
+
+dir_to_convert = '.\\Test'
+done_dir = '.\\Done'
+
 if not os.path.isdir(done_dir):
     os.mkdir(done_dir)
 
@@ -73,19 +80,91 @@ def find_pdf_files(directory):
 
 # Use the function
 
+def find_cbr_files(directory):
+    # get all rar files in the directory
+    return glob.glob(os.path.join(directory, '**', '*.cbr'), recursive=True)
 
+def zip_to_dir(path):
+    output_dir = create_output_directory(path)
+    # Extract the zip file
+    with zipfile.ZipFile(path, 'r') as zip:
+        zip.extractall(output_dir)
 
-pdf_files = find_pdf_files(dir_to_convert)
-print("number of pdf files to convert: ", len(pdf_files))
-if len(pdf_files) == 0:
-    print("No pdf files found")
-    exit()
-else:
-    print ("procced? (y/n)")
-    if input() != "y":
+def rar_to_dir(path):
+    output_dir = create_output_directory(path)
+    with rarfile.RarFile(path, 'r') as rar:
+        rar.extractall(output_dir)
+    
+    
+    
+def cbr_to_dir(path):
+    
+    
+    # check if the file is a zip or a rar
+    archive_type = get_archive_type(path)
+    print(path, archive_type)
+    if archive_type is not None:
+        # Create a new directory for the images
+        output_dir = create_output_directory(path)
+    if archive_type == 'zip':
+        renamed_path=os.path.join(os.path.dirname(path),os.path.basename(output_dir) + '.zip')
+        os.rename(path, renamed_path)
+        zip_to_dir(renamed_path)
+    elif archive_type == 'rar':
+        renamed_path=os.path.join(os.path.dirname(path),os.path.basename(output_dir) + '.rar')
+        os.rename(path, renamed_path)
+        rar_to_dir(renamed_path)
+    else:
+        print("File is not a zip or a rar")
+        return None
+    # Delete the original file
+    os.remove(renamed_path)
+    print("CBR extracted successfully.")
+    return output_dir
+
+def get_archive_type(file_path):
+    with open(file_path, 'rb') as file:
+        magic_number = file.read(4)
+    if magic_number[:4] == b'PK\x03\x04' or magic_number[:4] == b'PK\x05\x06' or magic_number[:4] == b'PK\x07\x08':
+        return 'zip'
+    elif magic_number[:7] == b'Rar!\x1A\x07\x00' or magic_number == b'Rar!\x1A\x07\x01\x00':
+        return 'rar'
+    else:
+        return None
+    
+def cbr_to_cbz(path):
+    dir = cbr_to_dir(path)
+    if dir is not None: # if the conversion was successful
+        dir_to_cbz(dir)
+        print("CBR converted successfully.")
+    
+if __name__ == "__main__":
+    pdf_files = find_pdf_files(dir_to_convert)
+    print("number of pdf files to convert: ", len(pdf_files))
+    if len(pdf_files) == 0:
+        print("No pdf files found")
+    else:
+        print ("procced? (y/n)")
+        if input() != "y":
+            pass
+        else:
+            print("proceeding...")
+            for path in pdf_files:
+                print( pdf_files.index(path)," of ", len(pdf_files))
+                convert_pdf_to_cbz(path)
+            print("done with pdf files")
+    cbr_files = find_cbr_files(dir_to_convert)
+    print("number of cbr files to convert: ", len(cbr_files))
+    if len(cbr_files) == 0:
+        print("No cbr files found")
         exit()
     else:
-        print("proceeding...")
-        for path in pdf_files:
-            convert_pdf_to_cbz(path)
-        print("done")
+        print ("procced? (y/n)")
+        if input() != "y":
+            exit()
+        else:
+            print("proceeding...")
+            for path in cbr_files:
+                print( cbr_files.index(path)," of ", len(cbr_files))
+                cbr_to_cbz(path)
+            print("done with cbr files")
