@@ -29,9 +29,7 @@ def create_output_directory(file_path):
     return output_dir
 
 def clean_up(path):
-    if not os.path.exists(done_dir + os.path.basename(path)): # if the file is not already in the Done directory
-        print("Moving the PDF file to the Done directory...")
-        print (done_dir + os.path.basename(path))
+    if not os.path.exists(done_dir + os.path.basename(path)): # if the file is not already in the Done directory        
         shutil.move(path, done_dir)
 
 def convert_pdf_to_images(pdf_path):
@@ -59,7 +57,7 @@ def convert_pdf_to_images(pdf_path):
             pix.save(output)
     
     # Close the document
-    print("Closing the PDF file...")
+    
 
     # Move the PDF file to the Done directory
     
@@ -80,13 +78,19 @@ def convert_pdf_to_cbz(path):
 
 def find_pdf_files(directory):
     # get all pdf files in the directory
-    return glob.glob(os.path.join(directory, '*.pdf'))
+    return glob.glob(os.path.join(directory, '**', '*.pdf'), recursive=True)
 
 # Use the function
 
 
 
 pdf_files = find_pdf_files(path2)
-for path in pdf_files:
-    convert_pdf_to_cbz(path)
-print(pdf_files) 
+print("number of pdf files to convert: ", len(pdf_files))
+print ("procced? (y/n)")
+if input() != "y":
+    exit()
+else:
+    print("proceeding...")
+    for path in pdf_files:
+        convert_pdf_to_cbz(path)
+    print("done")
