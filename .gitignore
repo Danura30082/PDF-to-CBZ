@@ -1,0 +1,8 @@
+# Ignore directory "done"
+/Done
+
+# Ignore directory "test"
+/Test
+
+# Ignore directory "test copy"
+/Test copy
