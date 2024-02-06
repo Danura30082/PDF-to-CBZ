@@ -7,6 +7,9 @@ This project contains a Python script that converts PDF files to CBZ (Comic Book
 The script uses the following Python libraries:
 
 - `fitz`: Part of the PyMuPDF package, used for PDF processing.
+- `os`: Provides functions for interacting with the operating system.
+- `shutil`: Offers a number of high-level operations on files and collections of files.
+- `glob`: Finds all the pathnames matching a specified pattern.
 
 ## Usage
 

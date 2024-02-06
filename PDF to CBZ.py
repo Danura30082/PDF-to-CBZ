@@ -2,21 +2,20 @@ import fitz
 import os
 import shutil
 import glob
-import time
-path = '.\\Test\\BD - Largo Winch - T4 - Business Blues.pdf'
-path = '.\\Test\\MCC L2 Licence Science et Technologie 22-23.pdf'
-path2 = '.\\Test'
-done_dir = '.\\Done'
+dir_to_convert = r'C:\Users\arnau\OneDrive\Images\BD'
+done_dir = r'C:\Users\arnau\OneDrive\Images\00Done'
 if not os.path.isdir(done_dir):
     os.mkdir(done_dir)
 
 def dir_to_cbz(path):
+    
     # Create the zip archive
     shutil.make_archive(path, 'zip', path)
     # Rename the .zip file to .cbz
     os.rename(path + '.zip', path + '.cbz')
     # Delete the original directory
     shutil.rmtree(path)
+    print("CBZ created successfully.")
 
 def create_output_directory(file_path):
     # Get the directory of the PDF file
@@ -31,6 +30,7 @@ def create_output_directory(file_path):
 def clean_up(path):
     if not os.path.exists(done_dir + os.path.basename(path)): # if the file is not already in the Done directory        
         shutil.move(path, done_dir)
+    print("PDF moved to Done directory.")
 
 def convert_pdf_to_images(pdf_path):
     # Error checking
@@ -44,7 +44,7 @@ def convert_pdf_to_images(pdf_path):
         print("CBZ file already exists.")
         return None
     
-    output_dir= create_output_directory(pdf_path)
+    output_dir = create_output_directory(pdf_path)
     
     print("Converting PDF to images in", output_dir)
     
@@ -56,16 +56,6 @@ def convert_pdf_to_images(pdf_path):
             output = os.path.join(output_dir, "outfile{}.png".format(i))
             pix.save(output)
     
-    # Close the document
-    
-
-    # Move the PDF file to the Done directory
-    
-    
-        
-    
-    
-    print("PDF converted successfully.")
     return output_dir
 
 def convert_pdf_to_cbz(path):
@@ -73,6 +63,7 @@ def convert_pdf_to_cbz(path):
     clean_up(path)
     if dir is not None: # if the conversion was successful
         dir_to_cbz(dir)
+    print("PDF converted successfully.")
 
 
 
@@ -84,13 +75,17 @@ def find_pdf_files(directory):
 
 
 
-pdf_files = find_pdf_files(path2)
+pdf_files = find_pdf_files(dir_to_convert)
 print("number of pdf files to convert: ", len(pdf_files))
-print ("procced? (y/n)")
-if input() != "y":
+if len(pdf_files) == 0:
+    print("No pdf files found")
     exit()
 else:
-    print("proceeding...")
-    for path in pdf_files:
-        convert_pdf_to_cbz(path)
-    print("done")
+    print ("procced? (y/n)")
+    if input() != "y":
+        exit()
+    else:
+        print("proceeding...")
+        for path in pdf_files:
+            convert_pdf_to_cbz(path)
+        print("done")
