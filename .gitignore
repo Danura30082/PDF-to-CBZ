@@ -1,8 +1,17 @@
 # Ignore directory "done"
-/Done
+/done/*
 
-# Ignore directory "test"
-/Test
 
-# Ignore directory "test copy"
-/Test copy
+/docs_to_convert/*
+!docs_to_convert/subdir/
+/docs_to_convert/subdir/*
+!docs_to_convert/subdir/dummy.pdf
+
+
+/docs_to_convert *
+
+
+# Include dummy file
+!docs_to_convert/subdir/dummy.pdf
+
+__pycache__/
